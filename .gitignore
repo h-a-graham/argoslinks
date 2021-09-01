@@ -41,3 +41,8 @@ vignettes/*.pdf
 # data files
 
 data/
+_targets/
+int_files/
+
+#QGIS folder
+QGIS/
