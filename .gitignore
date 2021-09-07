@@ -43,6 +43,6 @@ vignettes/*.pdf
 data/
 _targets/
 int_files/
-
+temp_storage/
 #QGIS folder
 QGIS/
