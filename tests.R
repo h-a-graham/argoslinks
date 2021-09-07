@@ -47,3 +47,9 @@ temp_save <- function(r){
   t <- tempfile(fileext = '.tif')
   terra::writeRaster(r, t)
 }
+
+source('R/release_patches.R')
+release_patches('int_files/mixedWood.tif', patch_min = 100000, gap_distance=250, tar_read(select_aoi), 
+                tar_read(cornish_roads), road_types=c("A Road", "B Road"),
+                inter_data_dir) 
+

@@ -9,22 +9,17 @@ source('R/warp_tcd.R')
 source('R/warp_method.R')
 source('R/set_up_gdalio.R')
 source('R/get_cornwall.R')
+source('R/cornwall_roads.R')
 source('R/habitat_raster.R')
-# source('R/rasterize_vectors.R')
-# source('R/process_veg.R')
-# source('R/download_osm_gb_rivers.R')
-# source('R/chunk_big_sf.R')
-# source('R/warp_bfi.R')
-# source('R/bfi_1km_res.R')
-# source('R/locl_bfi_outs.R')
+source('R/release_patches.R')
 
-# source('R/hack_for_bdc.R') # won't be needed soon hopefull - needed to join up with python BDC workflow.
 
-# future::plan(future::multisession, workers = 4)
+future::plan(future::multisession, workers = 2)
 # ==== target options ====
 options(tidyverse.quiet = TRUE)
-tar_option_set(packages = c("sf", "tidyverse", "purrr", "furrr", "curl", "zip", 
-                            "terra", "raster", "fasterize", "gdalio", "plyr"))
+tar_option_set(packages = c("sf", "plyr", "tidyverse", "purrr", "furrr", "curl", "zip", 
+                            "terra", "raster", "fasterize", "gdalio",
+                            "rmapshaper", "stars")) # need to check these soon -prety sure not all needed now...
 
 # ==== Define raw data locations: ====
 # CEH landcover 2019 20m raster
@@ -33,6 +28,10 @@ ceh_lcm19 <-'data/vegetation/FME_346E606F_1626178964646_1149/data/643eb5a9-9707-
 cop_tcd18 <- 'data/vegetation/TCD_2018_010m_gb_03035_v020/DATA'
 #counties data
 ons_counties <- 'data/Counties_and_Unitary_Authorities_(December_2019)_Boundaries_UK_BUC/Counties_and_Unitary_Authorities_(December_2019)_Boundaries_UK_BUC.shp'
+# OS open roads
+open_roads <- 'data/oproad_gpkg_gb/data/oproad_gb.gpkg'
+
+
 # # National Forest Inventory 2018 spatial vector (zipped shp format)
 # nfi_2018 <- 'data/vegetation/National_Forest_Inventory_Woodland_GB_2018-shp/8257a753-353e-48a5-8a6e-d69e63121aa5202041-1-1kunv01.h8eo.shp'
 # # OS VectorMapDistrict 
@@ -57,13 +56,29 @@ list(
   tar_target(data_check, 
              check_data(c(ceh_lcm=ceh_lcm19,
                           cop_tcd=cop_tcd18,
-                          ons_counties))),
+                          ons_counties,
+                          open_roads))),
   # mosaic and warp TCD data
   tar_target(mosaic_tcd, 
              warp_tcd(cop_tcd18, inter_data_dir)),
   tar_target(select_aoi,
              get_cornwall(ons_counties)),
   tar_target(warp_to_region,
-              habitat_raster(ceh_lcm19, mosaic_tcd, select_aoi, ras_res, inter_data_dir))
+              habitat_raster(ceh_lcm19, mosaic_tcd, select_aoi, ras_res, 
+                             inter_data_dir)),
+  tar_target(cornish_roads,
+             cornwall_roads(open_roads, select_aoi, inter_data_dir)),
+  tar_target(mix_Wood_R_patches,
+             release_patches(warp_to_region$mixedWood, patch_min = 100000, 
+                             gap_distance=250, select_aoi, 
+                             cornish_roads, 
+                             road_types=c("A Road", "B Road"),
+                             inter_data_dir, prefix='MW')),
+  tar_target(broad_Wood_R_patches,
+             release_patches(warp_to_region$brdleafWood, patch_min = 100000, 
+                             gap_distance=250, select_aoi, 
+                             cornish_roads, 
+                             road_types=c("A Road", "B Road"),
+                             inter_data_dir, prefix='BW'))
   
 )
