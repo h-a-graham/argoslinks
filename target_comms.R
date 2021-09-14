@@ -16,14 +16,15 @@ tar_make() # run the targets workflow
 targets::tar_make_future(workers = 2L) 
 # not using this anymore.
 
-tar_meta(fields = error, complete_only = TRUE) # show errors to help debugging.
+tar_read(view_mix_Wood)
+# tar_meta(fields = error, complete_only = TRUE) # show errors to help debugging.
 
-tar_read(download_OS_grid)# to view the results the arg is the target name....
+# tar_read(download_OS_grid)# to view the results the arg is the target name....
 
-tar_read(split_iterator)[[1]]
+# tar_read(split_iterator)[[1]]
 
-tar_read(warp_gb_bfi)
-tar_read(proc_veg_tiles)
+# tar_read(warp_gb_bfi)
+# tar_read(proc_veg_tiles)
 
 # purrr::map(tar_read(chunk_nfi), ~print(.))
 

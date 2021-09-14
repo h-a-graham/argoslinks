@@ -12,14 +12,15 @@ source('R/get_cornwall.R')
 source('R/cornwall_roads.R')
 source('R/habitat_raster.R')
 source('R/release_patches.R')
-
+source('R/random_palette.R')
+source('R/view_patches.R')
 
 future::plan(future::multisession, workers = 2)
 # ==== target options ====
 options(tidyverse.quiet = TRUE)
 tar_option_set(packages = c("sf", "plyr", "tidyverse", "purrr", "furrr", "curl", "zip", 
                             "terra", "raster", "fasterize", "gdalio",
-                            "rmapshaper", "stars")) # need to check these soon -prety sure not all needed now...
+                            "rmapshaper", "stars", "tmap")) # need to check these soon -prety sure not all needed now...
 
 # ==== Define raw data locations: ====
 # CEH landcover 2019 20m raster
@@ -69,16 +70,18 @@ list(
   tar_target(cornish_roads,
              cornwall_roads(open_roads, select_aoi, inter_data_dir)),
   tar_target(mix_Wood_R_patches,
-             release_patches(warp_to_region$mixedWood, patch_min = 100000, 
+             release_patches(warp_to_region$mixedWood, patch_min = 10000, 
                              gap_distance=250, select_aoi, 
                              cornish_roads, 
                              road_types=c("A Road", "B Road"),
                              inter_data_dir, prefix='MW')),
   tar_target(broad_Wood_R_patches,
-             release_patches(warp_to_region$brdleafWood, patch_min = 100000, 
+             release_patches(warp_to_region$brdleafWood, patch_min = 10000, 
                              gap_distance=250, select_aoi, 
                              cornish_roads, 
                              road_types=c("A Road", "B Road"),
-                             inter_data_dir, prefix='BW'))
+                             inter_data_dir, prefix='BW')),
+  tar_target(view_mix_Wood,
+             view_patches(mix_Wood_R_patches, cornish_roads))
   
 )
