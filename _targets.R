@@ -28,7 +28,9 @@ ceh_lcm19 <-'data/vegetation/FME_346E606F_1626178964646_1149/data/643eb5a9-9707-
 # Copernicus TCD 2018 Data Folder
 cop_tcd18 <- 'data/vegetation/TCD_2018_010m_gb_03035_v020/DATA'
 #counties data
-ons_counties <- 'data/Counties_and_Unitary_Authorities_(December_2019)_Boundaries_UK_BUC/Counties_and_Unitary_Authorities_(December_2019)_Boundaries_UK_BUC.shp'
+#ditching ONS counties...it sucks
+# ons_counties <- 'data/Counties_and_Unitary_Authorities_(December_2019)_Boundaries_UK_BUC/Counties_and_Unitary_Authorities_(December_2019)_Boundaries_UK_BUC.shp'
+ordsurv_bounds <- 'data/bdline_gpkg_gb/data/bdline_gb.gpkg'
 # OS open roads
 open_roads <- 'data/oproad_gpkg_gb/data/oproad_gb.gpkg'
 
@@ -57,31 +59,66 @@ list(
   tar_target(data_check, 
              check_data(c(ceh_lcm=ceh_lcm19,
                           cop_tcd=cop_tcd18,
-                          ons_counties,
+                          ordsurv_bounds,
                           open_roads))),
   # mosaic and warp TCD data
   tar_target(mosaic_tcd, 
              warp_tcd(cop_tcd18, inter_data_dir)),
   tar_target(select_aoi,
-             get_cornwall(ons_counties)),
+             get_cornwall(ordsurv_bounds)),
   tar_target(warp_to_region,
               habitat_raster(ceh_lcm19, mosaic_tcd, select_aoi, ras_res, 
                              inter_data_dir)),
   tar_target(cornish_roads,
              cornwall_roads(open_roads, select_aoi, inter_data_dir)),
-  tar_target(mix_Wood_R_patches,
-             release_patches(warp_to_region$mixedWood, patch_min = 10000, 
-                             gap_distance=250, select_aoi, 
-                             cornish_roads, 
-                             road_types=c("A Road", "B Road"),
-                             inter_data_dir, prefix='MW')),
-  tar_target(broad_Wood_R_patches,
-             release_patches(warp_to_region$brdleafWood, patch_min = 10000, 
-                             gap_distance=250, select_aoi, 
-                             cornish_roads, 
-                             road_types=c("A Road", "B Road"),
-                             inter_data_dir, prefix='BW')),
-  tar_target(view_mix_Wood,
-             view_patches(mix_Wood_R_patches, cornish_roads))
+
+  tar_target(Wood_patches,
+             woodland_vector(hab_ras=warp_to_region$mixedWood, aoi=select_aoi, 
+                             save_folder=inter_data_dir, prefix='MW')),
+  tar_target(road_split_woods,
+             road_patches(Wood_patches, select_aoi,  tar_read(cornish_roads), 
+                          road_types=c("A Road", "B Road"),al_dir, 
+                          prefix='MW', ncores=14)),
+  tar_target(squirrel_chunks,
+             release_patches (road_split_woods$int_road_path, 
+                              road_split_woods$road_zones, 
+                              zone_size = 1e4, patch_min = 5e3, 
+                              gap_distance=51, al_dir, 
+                              prefix='Squirrel', ncores=5)),
+  tar_target(marten_chunks,
+             release_patches (road_split_woods$int_road_path, 
+                              road_split_woods$road_zones, 
+                              zone_size = 2e5, patch_min = 2e5, 
+                              gap_distance=1100, al_dir, 
+                              prefix='Marten', ncores=5)),
+  
+  tar_target(wildcat,
+             release_patches (road_split_woods$int_road_path, 
+                              road_split_woods$road_zones, 
+                              zone_size = 1e6, patch_min = 7e4, 
+                              gap_distance=1430, al_dir, 
+                              prefix='Wildcat', ncores=5)),
+  tar_target(boar,
+             release_patches (road_split_woods$int_road_path, 
+                              road_split_woods$road_zones, 
+                              zone_size = 1e6, patch_min = 25e4, 
+                              gap_distance=2980, al_dir, 
+                              prefix='Boar', ncores=5)),
+  tar_target(AllWood_interactiveMap,
+             view_patches(all_wood= road_split_woods$int_road_path,
+                          corn_roads =cornish_roads, spc_name='AllWood')),
+  tar_target(Boar_interactiveMap,
+             view_patches(species_lyr= boar,
+                          corn_roads =cornish_roads, spc_name='Boar')),
+  tar_target(Squirrel_interactiveMap,
+             view_patches(species_lyr= squirrel_chunks,
+                          corn_roads =cornish_roads, spc_name='Squirrel')),
+  tar_target(Marten_interactiveMap,
+             view_patches(species_lyr= marten_chunks,
+                          corn_roads =cornish_roads, spc_name='Marten')),
+  tar_target(Wildcat_interactiveMap,
+             view_patches(species_lyr= wildcat,
+                          corn_roads =cornish_roads, spc_name='Wildcat'))
+  
   
 )

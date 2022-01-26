@@ -1,10 +1,7 @@
-get_cornwall <- function(counties){
+get_cornwall <- function(os_bounds){
   
-  counties <- st_read(counties)
+  st_read(os_bounds,
+          query = "SELECT * FROM 'boundary_line_ceremonial_counties' 
+                   WHERE NAME = 'Cornwall'")
   
-  corn <- counties %>%
-    filter(ctyua19nm=='Cornwall') %>%
-    st_make_valid()
-  
-  return(corn)
 }
