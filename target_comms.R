@@ -27,7 +27,7 @@ targets::tar_make_future(workers = 5L)
 # not using this anymore.
 tmap_options(max.categories = 460)
 tmap_mode("view")
-t <- tar_read(interactiveMap)
+t <- tar_read(boar)
 t
 
 # tmap_save(t, 'dev_maps/argosLinkTEST1.html')

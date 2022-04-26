@@ -14,6 +14,7 @@ source('R/habitat_raster.R')
 source('R/release_patches.R')
 source('R/random_palette.R')
 source('R/view_patches.R')
+source('R/create_al_fgdb.R')
 
 future::plan(future::multisession, workers = 2)
 # ==== target options ====
@@ -118,7 +119,9 @@ list(
                           corn_roads =cornish_roads, spc_name='Marten')),
   tar_target(Wildcat_interactiveMap,
              view_patches(species_lyr= wildcat,
-                          corn_roads =cornish_roads, spc_name='Wildcat'))
+                          corn_roads =cornish_roads, spc_name='Wildcat')),
+  tar_target(export_fgdb,
+             create_al_fgdb(c(squirrel_chunks, marten_chunks, wildcat, boar)))
   
   
 )
