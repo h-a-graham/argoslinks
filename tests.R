@@ -30,6 +30,7 @@ LMS <- function(){
   source('R/random_palette.R')
   source('R/view_patches.R')
   source('R/get_cornwall.R')
+  source('R/create_al_fgdb.R')
 }
 LMS()
 
@@ -81,9 +82,11 @@ view_patches(all_wood= tar_read(road_split_woods)$int_road_path,
              corn_roads =tar_read(cornish_roads), spc_name='AllWood')
 view_patches(species_lyr= tar_read(boar), corn_roads =tar_read(cornish_roads), spc_name='Boar')
 
+al_dir <- file.path(here(),'argos_links_out')
 
-
-
+create_al_fgdb(c(tar_read(squirrel_chunks), tar_read(marten_chunks), 
+                 tar_read(wildcat), tar_read(boar)),
+               file.path(al_dir, "ArgosLinks.gpkg"))
 
 
 # ------- JUNK -----------------
