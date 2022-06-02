@@ -1,0 +1,119 @@
+---
+title: "Argos Links"
+author: "Hugh Graham"
+date: '2022-06-02'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+library(dplyr)
+```
+
+Argos-Links is a framework for deriving potential habitat models for a range of 
+different terrestrial woodland species for Cornwall. The name Argos-links was 
+chosen as a name because the model works by calculating the relative distances/links
+between woodland (**Argos in cornish**) patches.
+
+The model is a generalised solution for estimating potential habitat areas, producing 
+two spatial polygon layers for a given species, the viable habitat in the zone and the 
+area that contains this viable habitat (the convex hull of the combined are of the patches).
+
+One of the key factors influencing terrestrial mammal mobility in a contemporary
+landscape is the road network. Roads are by no means a permenant barrier to animals
+but they are a significant cause of mortality and do exert and strong control 
+over the animal migration and movemet. Therefore, A and B roads are considered 
+as a barrier to the movement of a species. This simplification means that the 
+model cannot be used for certain applications. For example it would not be suitable
+for predicting the movement of animals between different viable habitat zones. 
+
+The primary intention of this model is to identify viable habitat areas with sufficient 
+woodland extent that is not intersecte by A or B roads. This provides a useful indicator of 
+which regions offer the best opportunities for releasing a given species. Those zones
+that contain a greater woodland area should be considered to have a greater potential for 
+species success. 
+
+There are four key variables considered in this model: 
+woodland type:
+gap distance:
+zone size:
+patch min:
+
+This Documetn summarises the methodology 
+
+### Habitat/Woodland preference
+```{r cars, echo=FALSE}
+habitat_defs <-
+  tibble::tibble(
+    Species = c('Boar',
+                'Squirrel',
+                'Marten',
+                'WildCat'),
+    `Habitat Preference` = c(
+      'Deciduous (1), Mixed (2), Coniferous (3) (Leaper et al. 1999; Łabudzki et al. 2009)',
+      paste0(
+        "Coniferous, Mixed, Deciduous (Lurz et al. 1995; Cagnin et al. 2000;",
+        "Hämäläinen et al. 2018) but preference isn’t particularly strong. ",
+        "However if considered in context of martens, coniferous habitat ",
+        "likely less preferable when the latter present (Twining et al. 2022)."
+      ),
+      paste0(
+        "No clear preference (Balharry et al. 2008), however broadleaved woodland ",
+        "likely offers greater dietary breadth (Twining et al. 2022). "
+      ),
+      "Deciduous, Mixed, Coniferous (Sarmento et al. 2006; Oliveria et al. 2018)"
+    )
+  )
+  
+  kableExtra::kbl(habitat_defs, longtable = T, booktabs = T,align = "c") %>%
+    kable_styling(full_width = F, 
+                  latex_options = c("repeat_header"),
+                  font_size = 9) |>
+    column_spec(1, width = "10em") |>
+    column_spec(2, width = "30em")
+```
+
+
+### Minimum Patch Size
+
+```{r}
+
+```
+
+### Minimum Total Woodland Area
+
+```{r}
+
+```
+
+### Gap distance
+
+```{r}
+
+```
+
+
+## Methods
+
+The Argos-Links models is written using the R programming language and is dependent
+on the following packages: ...
+
+The model is written as a reproducible {targets} workflow. The source code for 
+the model can be found here: [LINK TO CODE]
+
+### Input Data
+THe following input datasets are used for this model and should be additionally
+sited when referring to this model. See table X for the dataset names and references.
+
+```{r input-data-table, echo=FALSE}
+
+```
+
+
+### spatial workflow:
+
+
+
+
+## References
