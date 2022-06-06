@@ -9,6 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(kableExtra)
 library(dplyr)
+library(tibble)
 ```
 
 Argos-Links is a framework for deriving potential habitat models for a range of 
@@ -45,11 +46,11 @@ This Documetn summarises the methodology
 ### Habitat/Woodland preference
 ```{r cars, echo=FALSE}
 habitat_defs <-
-  tibble::tibble(
+  tibble(
     Species = c('Boar',
                 'Squirrel',
                 'Marten',
-                'WildCat'),
+                'Wildcat'),
     `Habitat Preference` = c(
       'Deciduous (1), Mixed (2), Coniferous (3) (Leaper et al. 1999; Łabudzki et al. 2009)',
       paste0(
@@ -66,7 +67,7 @@ habitat_defs <-
     )
   )
   
-  kableExtra::kbl(habitat_defs, longtable = T, booktabs = T,align = "c") %>%
+  kableExtra::kbl(habitat_defs, longtable = T, booktabs = T,align = c("c", "l")) %>%
     kable_styling(full_width = F, 
                   latex_options = c("repeat_header"),
                   font_size = 9) |>
@@ -75,22 +76,134 @@ habitat_defs <-
 ```
 
 
-### Minimum Patch Size
-
-```{r}
-
-```
 
 ### Minimum Total Woodland Area
+```{r tot-wood-area, echo=FALSE}
 
-```{r}
+select(habitat_defs, Species) %>%
+  mutate(
+    `tot. woodland area (ha)` = c(100, 1, 20, 100),
+    `info` = c(
+      paste0(
+        "Mean home range size 4.9km2/2.5km2 for males/females in ",
+        "Belgium (Prévot & Licoppe 2013), minimum size 1.06km2 in ",
+        "Romania with mean daily home range between 0.6 – 1.25km2 ",
+        "(Fodor et al. 2018). An adult female social unit of 6-30 ",
+        "individuals may cover a range of 2-5km2 expanding to ",
+        "10-40km2 in winter while adult male range can be 50km2. ",
+        "(Spitz 1992). Density in mosaic landscape of France of 1-3 ",
+        "animals per km2. Suggested home min home range 1km2."
+      ),
+      paste0(
+        "Min home range 1.52ha in large Belgian forests ",
+        "(Wauters & Dhondt 1990), densities of 0.5-1.5 per ha with large ",
+        "fluctuations recorded (Lurz et al. 2005). Suggested min home ",
+        "range 1 ha."
+      ),
+      paste0(
+        "Mean home range in Bialoweiza Forest 2.23 km2 for males ",
+        "and 1.49km2 for females (Zalewski et al. 2004), in more fragmented ",
+        "habitat in the French Ardennes Minimum home range 0.25km2/0.10km2  ",
+        "(mean 1.90/0.49) for males/females in fragmented habitat and ",
+        "3.45km2/1.21km2 (mean 3.45/1.21) in forest (Mergey et al. 2011), ",
+        "translocated martens in Wales mean 9.5km2 (range 0.2 -65.6km2) ",
+        "(McNichol 2020). Mostly coniferous forest in Wales and mixed ",
+        "woodland with agriculture in Ardennes, food availability likely ",
+        "greatest influence over smaller home ranges sizes here and ",
+        "especially within fragmented landscapes. Suggested min home ",
+        "range 0.2km2."
+      ),
+      paste0(
+        "In wet woodlands in Germany minimum home ranges of 8ha for ",
+        "females and 30 ha for males, in Swiss mixed woodland surrounded by ",
+        "pasture and woodland patches 70 ha for females and 150 ha for males ",
+        "(Walsh 2019). German woodlands surrounded by cultural landscape host ",
+        "home ranges averaging 285 ha for females and 1189 ha for males ",
+        "(Jerosch et al. 2017). Suggested min home range 100ha."
+      )
+      
+    )
+  ) %>% 
+  
+  kbl(longtable = T, booktabs = T,align = c("c", "c" ,"l")) %>%
+    kable_styling(full_width = F, 
+                  latex_options = c("repeat_header"),
+                  font_size = 9) |>
+    column_spec(1, width = "10em") |>
+    column_spec(2, width = "10em")|>
+    column_spec(2, width = "25em")
+```
 
+### Minimum Patch Size
+
+```{r min-patch, echo=FALSE}
+select(habitat_defs, Species) %>%
+  mutate(
+    `min. patch area (ha)` = c(25, 0.5, 20, 7),
+    `info` = c(
+      paste0(
+        "Estimated 1km2 of woodland can sustainably support 4 boar in context ",
+        "of Scottish reintroduction (Howells & Edward-Jones 1997) while taking ",
+        "a less conservative estimate Leaper et al. (1999) suggested based on ",
+        "various European populations an expected density of 3-5 boar per km2. ",
+        "Suggested minimum patch size 0.25km2."
+      ),
+      paste0(
+        "Minimum patch size on Isle of Wight 0.25 ha (Rushton et al. 1999). ",
+        "Suggested minimum patch size 0.5ha"
+      ),
+      paste0(
+        "In lowland linear riparian woods in Italy (similar habitat to Cornwall ",
+        "– wooded river valleys below agri landscapes) estimated density of ",
+        "pine martens is 0.8 - 2 per km2 (Pereboom et al 2008). Suggested ",
+        "minimum patch size 0.2km2."
+      ),
+      paste0(
+        "Minimum individual core range within wider home range 7ha for females ",
+        "and 215ha for males (433/770 max) in woodland/cultural landscape in ",
+        "Germany (Jerosch et al. 2017)."
+      )
+    ))%>% 
+  
+  kbl(longtable = T, booktabs = T,align = c("c", "c" ,"l")) %>%
+    kable_styling(full_width = F, 
+                  latex_options = c("repeat_header"),
+                  font_size = 9) |>
+    column_spec(1, width = "10em") |>
+    column_spec(2, width = "10em")|>
+    column_spec(2, width = "25em")
 ```
 
 ### Gap distance
 
-```{r}
-
+```{r gap-dist, echo=FALSE}
+select(habitat_defs, Species) %>%
+  mutate(
+    `max. gap distance (m)` = c(2980, 51, 1100, 1430),
+    `info` = c(
+      paste0(
+        "Mean dispersal distance 2.98km in Belguim (Prévot & Licoppe 2013), ",
+        "direct distance between resting places varies between 0-7km ",
+        "(Spitz 1986). "),
+      paste0(
+        "Minimum dispersal distance 51m in Belgium in fragmented habitats ",
+        "(mean 1,014m) (Wauters et al 2010)"),
+      paste0(
+        "Minimum dispersal distance of translocated martens in Wales was 1.1km ",
+        "(mean 8.7km) (McNichol et al. 2020)."),
+      paste0(
+        "Unknown. Maximum mean distance moved by wildcats in a Portugese study ",
+        "was 1.43km (Matias et al. 2021). ")
+      )
+    )%>% 
+  
+  kbl(longtable = T, booktabs = T,align = c("c", "c" ,"l")) %>%
+    kable_styling(full_width = F, 
+                  latex_options = c("repeat_header"),
+                  font_size = 9) |>
+    column_spec(1, width = "10em") |>
+    column_spec(2, width = "10em")|>
+    column_spec(2, width = "20em")
 ```
 
 
@@ -107,6 +220,25 @@ THe following input datasets are used for this model and should be additionally
 sited when referring to this model. See table X for the dataset names and references.
 
 ```{r input-data-table, echo=FALSE}
+
+tibble(
+  Name = c("CEH LCM 2019", "Copernicus TCD 2018", 
+           "National Forest Inventory 2018", "OS vectorMap District"),
+  `source location` = 
+  c("https://catalogue.ceh.ac.uk/documents/643eb5a9-9707-4fbb-ae76-e8e53271d1a0",
+    "https://land.copernicus.eu/pan-european/high-resolution-layers/forests/tree-cover-density/status-maps/tree-cover-density-2018",
+    "https://data-forestry.opendata.arcgis.com/datasets/d3d7bfba1cba4a3b83a948f33c5777c0_0/explore",
+    " https://osdatahub.os.uk/downloads/open/VectorMapDistrict"
+     )
+) %>% 
+  mutate(`source location` = cell_spec(`source location`, "html", link = `source location`)) %>%
+  kable("html", escape = FALSE) %>%
+  kable_styling(bootstrap_options = c("hover", "condensed"),
+                full_width = F, 
+                  latex_options = c("repeat_header"),
+                  font_size = 9) %>% 
+    column_spec(1, width = "10em") %>% 
+    column_spec(2, width = "300em") 
 
 ```
 
