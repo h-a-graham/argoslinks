@@ -1,9 +1,40 @@
 ---
-title: "Argos Links"
-author: "Hugh Graham"
-date: '2022-06-02'
-output: html_document
+title: "Argos-Links: a potential habitat distribution model for woodland species in Cornwall."
+subtitle: "Technical summary"
+author: | 
+  | Hugh A. Graham, Alan Puttock, Richard E. Brazier
+  | *Centre for Resilience in Environment, Water and Waste (CREWW), Geography, College of Life and  Environmental Sciences, University of Exeter, Exeter, UK*
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+fontfamily: mathpazo
+fontsize: 11pt
+urlcolor: blue
+header-includes:
+  - \usepackage{fancyhdr}
+  - \usepackage{booktabs}
+  - \usepackage{longtable}
+  - \usepackage{array}
+  - \usepackage{multirow}
+  - \usepackage{wrapfig}
+  - \usepackage{float}
+  - \usepackage{colortbl}
+  - \usepackage{pdflscape}
+  - \usepackage{tabu}
+  - \usepackage{threeparttable}
+  - \usepackage{threeparttablex}
+  - \usepackage[normalem]{ulem}
+  - \usepackage{makecell}
+  - \usepackage{xcolor}
+  - \usepackage{titling}
+  - \pretitle{\begin{flushleft}\fontsize{18bp}{18bp}\selectfont}
+  - \posttitle{\end{flushleft}}
+  - \preauthor{\begin{flushleft}\fontsize{13bp}{13bp}\selectfont}
+  - \postauthor{\end{flushleft}}
+  - \fancypagestyle{firststyle}{}
 ---
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -129,9 +160,9 @@ select(habitat_defs, Species) %>%
     kable_styling(full_width = F, 
                   latex_options = c("repeat_header"),
                   font_size = 9) |>
-    column_spec(1, width = "10em") |>
-    column_spec(2, width = "10em")|>
-    column_spec(2, width = "25em")
+    column_spec(1, width = "5em") |>
+    column_spec(2, width = "8em") |>
+    column_spec(3, width = "30em")
 ```
 
 ### Minimum Patch Size
@@ -169,9 +200,9 @@ select(habitat_defs, Species) %>%
     kable_styling(full_width = F, 
                   latex_options = c("repeat_header"),
                   font_size = 9) |>
-    column_spec(1, width = "10em") |>
-    column_spec(2, width = "10em")|>
-    column_spec(2, width = "25em")
+    column_spec(1, width = "5em") |>
+    column_spec(2, width = "8em") |>
+    column_spec(3, width = "30em")
 ```
 
 ### Gap distance
@@ -201,9 +232,9 @@ select(habitat_defs, Species) %>%
     kable_styling(full_width = F, 
                   latex_options = c("repeat_header"),
                   font_size = 9) |>
-    column_spec(1, width = "10em") |>
-    column_spec(2, width = "10em")|>
-    column_spec(2, width = "20em")
+    column_spec(1, width = "5em") |>
+    column_spec(2, width = "8em") |>
+    column_spec(3, width = "30em")
 ```
 
 
@@ -222,30 +253,133 @@ sited when referring to this model. See table X for the dataset names and refere
 ```{r input-data-table, echo=FALSE}
 
 tibble(
-  Name = c("CEH LCM 2019", "Copernicus TCD 2018", 
-           "National Forest Inventory 2018", "OS vectorMap District"),
+  `Full Name` = c("Centre for Ecology and Hydrology, Land Cover Map 2019",
+                  "Copernicus Tree Cover Density, 2018", "Ordnance Survey Boundary Line",
+                  "Ordnance Survey Open Roads"),
+  
+  `Short Name` = c("LCM 2019", "TCD 2018",
+           "OS Boundary-Line", "OS open-roads"),
   `source location` = 
   c("https://catalogue.ceh.ac.uk/documents/643eb5a9-9707-4fbb-ae76-e8e53271d1a0",
     "https://land.copernicus.eu/pan-european/high-resolution-layers/forests/tree-cover-density/status-maps/tree-cover-density-2018",
-    "https://data-forestry.opendata.arcgis.com/datasets/d3d7bfba1cba4a3b83a948f33c5777c0_0/explore",
-    " https://osdatahub.os.uk/downloads/open/VectorMapDistrict"
+    "https://www.ordnancesurvey.co.uk/business-government/products/boundaryline",
+    "https://www.ordnancesurvey.co.uk/business-government/products/open-map-roads"
      )
 ) %>% 
-  mutate(`source location` = cell_spec(`source location`, "html", link = `source location`)) %>%
-  kable("html", escape = FALSE) %>%
-  kable_styling(bootstrap_options = c("hover", "condensed"),
-                full_width = F, 
+  # mutate(`source location` = cell_spec(`source location`, "html", link = `source location`)) %>%
+  # kable(escape = FALSE) %>%
+  kbl(longtable = T, booktabs = T,align = c("c", "c" ,"l")) %>%
+    kable_styling(full_width = F, 
                   latex_options = c("repeat_header"),
                   font_size = 9) %>% 
-    column_spec(1, width = "10em") %>% 
-    column_spec(2, width = "300em") 
+    column_spec(1, width = "8em") |>
+    column_spec(2, width = "5em") |>
+    column_spec(3, width = "30em")
 
 ```
+
+### Data Preparation:
+- Copernicus TCD raster tiles are downloaded and mosaiced into a single file.
+
+- Extract Cornwall county region from the Ordnance Survey Boundary-Lines dataset.
+
+- Reproject CEH Land Cover Map and Copernicus Tree Cover
+
+
 
 
 ### spatial workflow:
 
 
 
-
+\pagebreak
 ## References
+
+Balharry, E. (1993) Social organization in martens: an inflexible system? 
+Symposia of the Zoological Society of London, 65, 321-345.
+
+Balharry, E., Jefferies, D. J., Birks, J. D. S. (2008) Pine marten. In the 
+Handbook of British Mammals 4th Edition, pp.447-455. Edited by Hariss, S.. & 
+Yalden, D. W. The Mammal Society, Southampton.
+
+Brainerd, S.M., Helldin, J.O., Lindström, E.R., Rolstad, E., Rolstad, J. & 
+Storch, I., (1995) Pine marten (Martes martes) selection of resting and 
+denning sites in Scandinavian managed forests. In Annales Zoologici Fennici 
+(pp. 151-157). Finnish Zoological and Botanical Publishing Board.
+
+Cagnin, M., Aloise, G., Fiore, F., Oriolo, V., & Wauters, L. A. (2000) Habitat 
+use and population density of the red squirrel, Sciurus vulgaris meridionalis, 
+in the Sila Grande mountain range (Calabria, South Italy). Italian Journal of 
+Zoology, 67(1), 81-87.
+
+Hämäläinen, S., Fey, K., & Selonen, V. (2018) Habitat and nest use during natal 
+dispersal of the urban red squirrel (Sciurus vulgaris). Landscape and Urban 
+Planning, 169, 269-275.
+
+Howells, O. and Edwards-Jones, G. (1997). A feasibility study of reintroducing 
+wild boar Sus scrofa to Scotland: Are existing woodlands large enough to support 
+minimum viable populations. Biological Conservation, 81, 77-89.
+
+Jerosch, S., Götz, M. and Roth, M., (2017) Spatial organisation of European 
+wildcats (Felis silvestris silvestris) in an agriculturally dominated landscape 
+in Central Europe. Mammalian Biology, 82, pp.8-16.
+
+Fodor, J.T., (2018) Wild Boar 2018. Home Range and Habitat Use in Two Romanian 
+Habitats. Acta Silvatica et Lignaria Hungarica, 14(1), pp.51-63.
+
+Łabudzki, L., Górecki, G., Skubis, J. and Wlazełko, M., (2009) Forest habitats 
+use by wild boar in the Zielonka Game Investigation Centre. Acta Scientiarum 
+Polonorum Silvarum Colendarum Ratio et Industria Lignaria, 8(4), pp.51-57.
+
+Leaper, R., Massei, G., Gorman, M. and Aspinall, R. (1999) The feasibility of 
+reintroducing Wild Boar (Sus scrofa) to Scotland.
+
+Lurz, P. W., Garson, P. J., & Rushton, S. P. (1995) The ecology of squirrels in 
+spruce dominated plantations: implications for forest management. Forest ecology 
+and management, 79(1-2), 79-90.
+
+Lurz, P. W. W., Gurnell J., and Magris, L. (2005) Sciurus vulgaris. Mammalian 
+Species 769: 1-10.
+
+Mergey, M., Helder, R. and Roeder, J.J., (2011) Effect of forest fragmentation on 
+space-use patterns in the European pine marten (Martes martes). Journal of 
+Mammalogy, 92(2), pp.328-335.
+
+Oliveira, T., Urra, F., López‐Martín, J.M., Ballesteros‐Duperón, E., Barea‐Azcón,
+J.M., Moléon, M., Gil‐Sánchez, J.M., Alves, P.C., Díaz‐Ruíz, F., Ferreras, P. and
+Monterroso, P., (2018) Females know better: Sex‐biased habitat selection by the
+European wildcat. Ecology and evolution, 8(18), pp.9464-9477.
+
+Pereboom, V., Mergey, M., Villerette, N., Helder, R., Gerard, J.F. and Lode, T., 
+(2008) Movement patterns, habitat selection, and corridor use of a typical
+woodland-dweller species, the European pine marten (Martes martes), in fragmented landscape. Canadian Journal of Zoology, 86(9), pp.983-991.
+
+Rushton, S.P., Lurz, P.W.W., South, A.B. and Mitchell‐Jones, A., (1999)
+Modelling the distribution of red squirrels (Sciurus vulgaris) on the Isle of 
+Wight. Animal Conservation, 2(2), pp.111-120.
+
+Sarmento, P., Cruz, J., Tarroso, P. and Fonseca, C., (2006) Space and habitat 
+selection by female European wild cats (Felis silvestris silvestris). Wildlife 
+Biology in Practice, pp.79-89.
+
+Spitz, F. (1986) Current state of knowledge of wild boar biology. Pig News and 
+Information, 7 (2), 171–175.
+
+Spitz, F. (1992) General model of spatial and social organisa- tion of the wild 
+boar (Sus scrofa). In Ongules/Ungulates 91, ed. F. Spitz, G. Janeau, G. Gonzalez 
+and S. Aulangier, pp. 385-389. SFEPM-IRGM, Toulouse.
+
+Twining, J. P., Sutherland, C., Reid, N., and Tosh, D. G. (2022) Habitat mediates 
+coevolved but not novel species interactions. Proceedings of the Royal 
+Society B, 289, 20212338.
+
+Wauters, L.A. and Dhondt, A.A., (1990) Nest-use by red squirrels (Sciurus 
+vulgaris Linnaeus, 1758).
+
+Wauters, L.A., Verbeylen, G., Preatoni, D., Martinoli, A. and Matthysen, E., 
+(2010) Dispersal and habitat cuing of Eurasian red squirrels in fragmented 
+habitats. Popul Ecol, 52, pp.527-536.
+
+Zalewski, A., Jedrzejewski, W. and Jedrzejewski, B., (2004) Mobility and home 
+range use by pine martens (Martes martes) in a Polish primeval forest. 
+Ecoscience, 11(1), pp.113-122.

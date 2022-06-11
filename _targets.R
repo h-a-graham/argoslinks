@@ -120,7 +120,7 @@ list(
   tar_target(Wildcat_interactiveMap,
              view_patches(species_lyr= wildcat,
                           corn_roads =cornish_roads, spc_name='Wildcat')),
-  tar_target(export_fgdb,
+  tar_target(export_gpkg,
              create_al_fgdb(c(squirrel_chunks, marten_chunks, wildcat, boar),
                             file.path(al_dir, "ArgosLinks.gpkg")))
   
