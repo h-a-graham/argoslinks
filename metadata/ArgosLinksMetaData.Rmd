@@ -34,8 +34,6 @@ header-includes:
   - \postauthor{\end{flushleft}}
   - \fancypagestyle{firststyle}{}
 ---
-
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(kableExtra)
@@ -45,37 +43,43 @@ library(tibble)
 
 Argos-Links is a framework for deriving potential habitat models for a range of 
 different terrestrial woodland species for Cornwall. The name Argos-links was 
-chosen as a name because the model works by calculating the relative distances/links
-between woodland (**Argos in cornish**) patches.
+chosen because the model works by calculating the relative distances/links
+between woodland (**Argos in Cornish**) patches.
 
 The model is a generalised solution for estimating potential habitat areas, producing 
 two spatial polygon layers for a given species, the viable habitat in the zone and the 
-area that contains this viable habitat (the convex hull of the combined are of the patches).
+area that contains this viable habitat, limited by road boundaries.
 
 One of the key factors influencing terrestrial mammal mobility in a contemporary
-landscape is the road network. Roads are by no means a permenant barrier to animals
+landscape is the road network. Roads are by no means a permanent barrier to animals
 but they are a significant cause of mortality and do exert and strong control 
-over the animal migration and movemet. Therefore, A and B roads are considered 
-as a barrier to the movement of a species. This simplification means that the 
-model cannot be used for certain applications. For example it would not be suitable
+over animal migration and movement (Glista, et al., 2009). Therefore, in this work
+we make the simplified assumption that A and B roads are a barrier to the movement 
+of the considered species. This simplification means that the model cannot be 
+used for certain applications. For example it would not be suitable
 for predicting the movement of animals between different viable habitat zones. 
 
-The primary intention of this model is to identify viable habitat areas with sufficient 
-woodland extent that is not intersecte by A or B roads. This provides a useful indicator of 
+However, The primary intention of this model is to identify viable habitat areas with sufficient 
+woodland extent that is not intersected by A or B roads. This provides a useful indicator of 
 which regions offer the best opportunities for releasing a given species. Those zones
 that contain a greater woodland area should be considered to have a greater potential for 
-species success. 
+species recovery/release success. 
 
-There are four key variables considered in this model: 
-woodland type:
-gap distance:
-zone size:
-patch min:
+The only habitat type considered in this model is woodland. We define woodland habitat as 
+continuous woody cover with a minimum area of 0.1 ha and a minimum canopy cover of 25%.
 
-This Documetn summarises the methodology 
+There were four key variables considered in this model and are described in the 
+following tables: 
+
 
 ### Habitat/Woodland preference
-```{r cars, echo=FALSE}
+This may be Either Deciduous, or coniferous in the model. A mixed category is 
+included in Table 1 for clarity. However, it is clear that all species can establish
+in either woodland type.
+
+
+*Table 1*
+```{r table1-hab-defs, echo=FALSE, fig.cap="Table 1"}
 habitat_defs <-
   tibble(
     Species = c('Boar',
@@ -107,9 +111,14 @@ habitat_defs <-
 ```
 
 
-
 ### Minimum Total Woodland Area
-```{r tot-wood-area, echo=FALSE}
+ The minimum total accessible woodland area required for a given species. This 
+ measure includes all woodland patches that are within the specified gap distance (Table 4)
+ of one another.
+
+
+*Table 2*
+```{r table2-tot-wood-area, echo=FALSE}
 
 select(habitat_defs, Species) %>%
   mutate(
@@ -165,9 +174,14 @@ select(habitat_defs, Species) %>%
     column_spec(3, width = "30em")
 ```
 
-### Minimum Patch Size
 
-```{r min-patch, echo=FALSE}
+### Minimum Patch Area
+The minimum woodland patch size that might contribute to the habitat of a given 
+species. 
+
+
+*Table 3*
+```{r table3-min-patch, echo=FALSE}
 select(habitat_defs, Species) %>%
   mutate(
     `min. patch area (ha)` = c(25, 0.5, 20, 7),
@@ -205,9 +219,14 @@ select(habitat_defs, Species) %>%
     column_spec(3, width = "30em")
 ```
 
-### Gap distance
 
-```{r gap-dist, echo=FALSE}
+### Gap distance
+The distance between individual woodland patches that is likely to be travelled 
+by a species within its home range.
+
+
+*Table 4*
+```{r table4-gap-dist, echo=FALSE}
 select(habitat_defs, Species) %>%
   mutate(
     `max. gap distance (m)` = c(2980, 51, 1100, 1430),
@@ -241,13 +260,14 @@ select(habitat_defs, Species) %>%
 ## Methods
 
 The Argos-Links models is written using the R programming language and is dependent
-on the following packages: ...
+on the following packages: "sf", "plyr", "tidyverse", "purrr", "furrr", "curl", "zip", 
+"terra", "raster", "fasterize", "gdalio", "rmapshaper", "stars", "tmap".
 
 The model is written as a reproducible {targets} workflow. The source code for 
-the model can be found here: [LINK TO CODE]
+the model can be found at: [https://github.com/h-a-graham/argoslinks](https://github.com/h-a-graham/argoslinks)
 
 ### Input Data
-THe following input datasets are used for this model and should be additionally
+The following input datasets are used for this model and should be additionally
 sited when referring to this model. See table X for the dataset names and references.
 
 ```{r input-data-table, echo=FALSE}
@@ -279,17 +299,124 @@ tibble(
 ```
 
 ### Data Preparation:
-- Copernicus TCD raster tiles are downloaded and mosaiced into a single file.
 
-- Extract Cornwall county region from the Ordnance Survey Boundary-Lines dataset.
+- Cornwall county region from the Ordnance Survey Boundary-Lines dataset Extracted
+as a spatal polygon feature.
 
-- Reproject CEH Land Cover Map and Copernicus Tree Cover
+- CEH Land Cover Map and Copernicus Tree Cover were Reprojected to 10 m resolution, with 
+equivalent extents and grid alignment, contrained by the cornwall county bounding 
+extent. The LCM was resampled using the "nearest" resampling method and the TCD is
+resampled using the "cubic-spline" method. This operation is handled using the 
+gdal-warp utility.
 
 
+- A new raster is reated from the LCM and TCD maps. Regions where the TCD value 
+is >25 were given a value of 1. Regions where the LCM is classed as Broadleaf 
+woodland were given a value of 1. Regions where the LCM is classed as coniferous 
+were given a value of 2 (overriding a value of 1 if previously assigned.) Values
+not considered woodland were set to 0. Offshore regions were set as NA. We refer 
+to this raster as the Woodland Type Raster (WTR)
 
 
-### spatial workflow:
+- All Roads that intersect the Area of Interest (AOI), in this case the Cornwall
+county boundary, were extracted from the OS open-roads dataset. 
 
+### Creating woodland spatial vector
+
+- WTR values that equaled zero were converted to NA. The WTR is then converted to a 
+spatial vector where broadleafed and coniferous were each classified with a 
+unique integer ID (either 1 or 2). The features that fall within 1 km of the
+county boundary were retained.
+
+- Woodland polygons with an area < 0.1 ha were removed, as these were not 
+considered to reliably contribute valuable woodland habitat. 
+
+- The feature geometries were then simplified, retaining 25% of vertices. This 
+improves the performance of spatial operation whilst retaining accuracy.
+
+### splitting woodland spatial vector by road network.
+
+- The cornish road network was filtered, selecting only A and B roads. The 
+network was then unionised into a single MULTILINESTRING geometry. Herein 
+referred to as minimal road network.
+
+- A negative buffer of 500 m was applied to the county area and was then split
+into discrete polygons using minimal road network. The - 500 m buffer is used
+so that small gaps between road dead-ends and the coastline were not considered
+as viable connectivity routes. This simplification is required in order to avoid
+the assumption that viable corridors can form along these areas. In reality, 
+they typically comprise steep cliffs/rocky areas/beaches which were less likely to 
+afford a viable route between woodland patches. The polygon areas created in this
+step are referred to as road patches.
+
+- Woodland areas that intersect the road patches were retained and a spatial 
+intersection of the road patches and woodland areas is carried out, resluting in
+a woodland area polygon split by the minimal road network. These features are 
+referred to herein as in-patch woodland.
+
+- The previous intersection step excludes woodland that falls within 500 m of the 
+coastline. These woodlands may provide important habitat. Therefore, woodland 
+polygons that either overlap or do not intersect the road patches were located and subset.
+Features of this subset that overlap the road pataches are intersected (removing the part of
+the polygon that is already considered). These features are then then spatially
+joined to the nearest road patch using a k-nearest neighbours algorithm with
+a maximum search distance of 750 m. These features are referred to herein as 
+out-patch woodland.
+
+- The in-patch and out-patch woodland features are joined resulting in a woodland
+area polygon with unique ID attributes, a road patch attribute which denotes the
+inter-road zone that each woodland polygon belongs to and a woodland type classifier.
+
+- This spatial polygon layer is provided as a layer in the provided dataset (Named:
+MW_InterRoadCover). This dataset is not species specific but is general and provides
+a useful overview as to which regions of the county contain woodland (not) intersected 
+by main roads.
+
+### Species-level models.
+
+- At this stage, the rules described in Tables 2-4 are used to determine which
+inter-road zones provide suitable habitat. 
+
+- Woodland features are grouped by the road patch ID. For each road patch the 
+following steps are carried out: 
+
+  - The area of each invidual woodland patch is calculated. All features with an
+  area less than the minimum patch size (Table 3) are removed.
+  
+  - The total area of remaining woodland within the road patch is calculated. If this is
+  less than the minimum Total Woodland Area (Table 2) for the species, all
+  woodland within the roach patch is removed and no features are returned. 
+  
+  - Remaining feature are all buffered by the gap distance (Table 4) divided by 2.
+  The distance is halved because other woodlands are also buffered and this therefore
+  marks the halfway point between woodland areas. Where these buffers intersect,
+  the gap distance is less than the maximum allowed.
+  
+  - These buffered areas are then intersected by remaining woodland greater than
+  the minimum patch size. Those intersectng areas are retained as viable habitat. 
+  
+  - The Total habitat area is once again checked and if less than the minimum 
+  total area, no features are returned.
+
+- Returned woodland features and and buffered areas were retained and spatially
+joined with the road patches to assign a unique road patch ID for each zone and 
+the patches within the zones. 
+
+- These features were then saved in the GeoPackage format.
+
+- interactive leafleat maps were produced to display the general datasets and 
+individual species level models.
+
+The following table summarises the output datasets and interactive maps provided.
+
+
+### Output Data
+
+...
+
+### Output Interactive Maps
+
+...
 
 
 \pagebreak
@@ -311,6 +438,10 @@ Cagnin, M., Aloise, G., Fiore, F., Oriolo, V., & Wauters, L. A. (2000) Habitat
 use and population density of the red squirrel, Sciurus vulgaris meridionalis, 
 in the Sila Grande mountain range (Calabria, South Italy). Italian Journal of 
 Zoology, 67(1), 81-87.
+
+Glista, D. J., DeVault, T. L., & DeWoody, J. A. (2009). A review of mitigation 
+measures for reducing wildlife mortality on roadways. Landscape and urban 
+planning, 91(1), 1-7.
 
 Hämäläinen, S., Fey, K., & Selonen, V. (2018) Habitat and nest use during natal 
 dispersal of the urban red squirrel (Sciurus vulgaris). Landscape and Urban 
