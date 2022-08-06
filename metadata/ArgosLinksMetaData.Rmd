@@ -404,19 +404,39 @@ the patches within the zones.
 
 - These features were then saved in the GeoPackage format.
 
-- interactive leafleat maps were produced to display the general datasets and 
-individual species level models.
-
-The following table summarises the output datasets and interactive maps provided.
-
 
 ### Output Data
 
-...
+The model results are provided in the directory ArgosLinks/Data/. Data is provided
+in the GeoPackage format which supports multiple layers and can be read my the 
+majority of GIS software. Two files are provided: *ArgosLinks.gpkg* and 
+*MW_InterRoadCover.gpkg*.
+
+
+#### *ArgosLinks.gpkg*
+
+The file contains 8 layers with the one of the follwoing naming conventions: 
+
+ArgosLinks_{SPECIES}_patches or ArgosLinks_{SPECIES}_chunks. 
+
+layers ending with *patches* display the woodland area suitable for a given species. 
+Those ending in *chunks* display the area accessible by the species based on range 
+and road obstructions. Both patch and chunk laers have corresponding **species_region**
+and **inter_road_zone** attributes that identify habitat regions. 
+
+#### *MW_InterRoadCover.gpkg*
+
+This file comprises a single layer displaying all woodland zones. All zones have
+a **inter_road_zone** attribute that corresponds with the ArgosLinks dataset. 
+The woodland type - either Broadleaf or Confier is also given as **wood_class**. 
+
 
 ### Output Interactive Maps
 
-...
+interactive leafleat maps were produced to display the general datasets and 
+individual species level models. And can be found in the following directory: 
+ArgosLinks/Data/LeafMaps. These html files can be viewed in any web browser.
+
 
 
 \pagebreak
