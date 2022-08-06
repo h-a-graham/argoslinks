@@ -416,8 +416,7 @@ majority of GIS software. Two files are provided: *ArgosLinks.gpkg* and
 #### *ArgosLinks.gpkg*
 
 The file contains 8 layers with the one of the follwoing naming conventions: 
-
-ArgosLinks_{SPECIES}_patches or ArgosLinks_{SPECIES}_chunks. 
+*ArgosLinks_SPECIES_patches* or *ArgosLinks_SPECIES_chunks* . 
 
 layers ending with *patches* display the woodland area suitable for a given species. 
 Those ending in *chunks* display the area accessible by the species based on range 
